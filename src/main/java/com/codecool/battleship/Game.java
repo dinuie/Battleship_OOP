@@ -1,4 +1,4 @@
 package com.codecool.battleship;
 
-public class Board {
+public class Game {
 }
