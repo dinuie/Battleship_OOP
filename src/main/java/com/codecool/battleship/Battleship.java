@@ -1,24 +1,27 @@
 package com.codecool.battleship;
+
 import com.codecool.battleship.Input;
 import com.codecool.battleship.Display;
+import com.codecool.battleship.Game;
 
 public class Battleship {
+    private Game game;
     private Display display;
     private Input inputs;
     public boolean run;
 
-    private Battleship(){
+    private Battleship() {
         display = new Display();
         inputs = new Input();
-//        game = new Game();
+        game = new Game();
         run = true;
     }
 
-    public void mainMenu(){
-        while(run){
+    public void mainMenu() {
+        while (run) {
             display.displayMenu();
             int chosenMode = inputs.userInt();
-            switch(chosenMode){
+            switch (chosenMode) {
                 case 0:
                     run = false;
                     break;
@@ -32,7 +35,7 @@ public class Battleship {
         }
     }
 
-    public static void main(String args[]){
+    public static void main(String args[]) {
         new Battleship().mainMenu();
     }
 }
