@@ -5,7 +5,7 @@ public class Square {
     private final int Y;
     private SquareStatus squareStatus;
 
-    public Square(int x, int y, SquareStatus status) {
+    public Square(int x, int y) {
         X = x;
         Y = y;
         squareStatus = SquareStatus.EMPTY;
