@@ -2,7 +2,8 @@ package com.codecool.battleship;
 
 import com.codecool.battleship.Display;
 import com.codecool.battleship.Input;
-import com.codecool.battleship.board.BoardFactory;
+import com.codecool.battleship.Player;
+import com.codecool.battleship.board.Board;
 
 public class Game {
     private Player firstPlayer;
@@ -11,6 +12,8 @@ public class Game {
     private Input inputs;
     private Board board;
     private int turn;
+    private boolean hasWon;
+    private String name;
 
     private int getTurn() {
         return turn;
@@ -21,6 +24,7 @@ public class Game {
     }
 
     private Game() {
+        hasWon = false;
         turn = 1;
         board = new Board();
         display = new Display();
@@ -44,12 +48,20 @@ public class Game {
     }
 
     private void play() {
-        while (!enemyHasLost()) {
+        while (!hasWon) {
             turn = getTurn();
             if (turn % 2 == 0) {
                 playRound(firstPlayer, secondPlayer);
+                if (enemyHasLost(secondPlayer)) {
+                    display.printWinner(firstPlayer);
+                    hasWon = true;
+                }
             } else {
                 playRound(secondPlayer, firstPlayer);
+                if (enemyHasLost(firstPlayer)) {
+                    display.printWinner(secondPlayer);
+                    hasWon = true;
+                }
             }
             setTurn(turn + 1);
         }
@@ -68,9 +80,6 @@ public class Game {
         }
         board.setTable(enemyPlayer);
         display.printEnemyTable();
-        if (enemyHasLost(enemyPlayer)) {
-            display.printResult();
-        }
     }
 
     private boolean enemyHasLost(Player enemyPlayer) {
