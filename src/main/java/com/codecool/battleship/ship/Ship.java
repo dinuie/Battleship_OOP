@@ -1,18 +1,17 @@
 package com.codecool.battleship.ship;
 
 import java.util.List;
-import java.util.Stack;
-import java.util.HashSet;
 
 import com.codecool.battleship.square.Square;
+import com.codecool.battleship.Player;
 
 public class Ship {
     private List<Square> position;
     private ShipType shipType;
     private Player player;
-    private Boolean isSunk;
+    private boolean isSunk;
 
-    public Ship(List<Square> position, ShipType shipType, Player player, Boolean isSunk) {
+    public Ship(List<Square> position, ShipType shipType, Player player) {
         this.position = position;
         this.shipType = shipType;
         this.player = player;
@@ -23,15 +22,19 @@ public class Ship {
         return player;
     }
 
-    public Boolean getSunk() {
+    public boolean getSunk() {
         return isSunk;
     }
 
-    public void setSunk(Boolean sunk) {
+    public void setSunk(boolean sunk) {
         isSunk = sunk;
     }
 
     public ShipType getShipType() {
         return shipType;
+    }
+
+    public List<Square> getPosition() {
+        return position;
     }
 }

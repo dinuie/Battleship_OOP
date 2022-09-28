@@ -9,7 +9,7 @@ public class Input {
 
     public int userInt() {
         String input = "";
-        while (isInt(input)) {
+        while (!isInt(input)) {
             input = userInput.nextLine();
         }
         return Integer.parseInt(input);
@@ -35,7 +35,7 @@ public class Input {
         }
         int firstCoord = convertFirstCoord(startingCoord[0], abc);
         int secondCoord = convertSecordCoord(startingCoord, abc);
-        if (secondCoord < 0 || firstCoord < 0) {
+        if (firstCoord < 0 || secondCoord < 0) {
             return coordInput();
         }
         int[] startingCoord = new int[2];
