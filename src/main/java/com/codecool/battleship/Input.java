@@ -7,6 +7,14 @@ import java.util.Scanner;
 public class Input {
     Scanner userInput = new Scanner(System.in);
 
+    public String userName() {
+        String input = userInput.nextLine();
+        if (isValidNameInput(input)) {
+            return input;
+        }
+        return userName();
+    }
+
     public int userInt() {
         String input = "";
         while (!isInt(input)) {
@@ -26,17 +34,17 @@ public class Input {
 
     }
 
-    public int[] coordInput() {
+    public int[] userCoord() {
         char[] abc = Util.getLetters(10, false);
         String move = userInput.nextLine();
         char[] startingCoord = move.toCharArray();
-        if (!validInput(startingCoord)) {
-            return coordInput();
+        if (!isValidCoordInput(startingCoord)) {
+            return userCoord();
         }
         int firstCoord = convertFirstCoord(startingCoord[0], abc);
         int secondCoord = convertSecordCoord(startingCoord, abc);
         if (firstCoord < 0 || secondCoord < 0) {
-            return coordInput();
+            return userCoord();
         }
         int[] startingCoord = new int[2];
         startingCoord[0] = firstCoord;
@@ -74,11 +82,15 @@ public class Input {
         return -1;
     }
 
-    public boolean validInput(char[] coords) {
+    public boolean isValidCoordInput(char[] coords) {
         if (coords.length < 2 || coords.length > 3) {
             return false;
         } else if (coords.length == 3) {
             return Character.isDigit(coords[1]) && Character.isDigit(coords[2]);
         } else return Character.isDigit(coords[1]);
+    }
+
+    public boolean isValidNameInput(String name) {
+        return name.length() <= 10;
     }
 }

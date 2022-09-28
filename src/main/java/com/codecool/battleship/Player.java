@@ -4,7 +4,6 @@ import com.codecool.battleship.ship.Ship;
 import com.codecool.battleship.square.Square;
 import com.codecool.battleship.square.SquareStatus;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class Player {
@@ -26,26 +25,30 @@ public class Player {
         }
     }
 
-    public boolean isAlive(List<Ship> ships){
+    public boolean isAlive(List<Ship> ships) {
         int playerALlShipNumber = ships.size();
         int playerSunkShipsNumber = 0;
-        for (Ship ship : ships){
-            if(ship.getSunk()){
+        for (Ship ship : ships) {
+            if (ship.getSunk()) {
                 playerSunkShipsNumber++;
             }
         }
         return playerALlShipNumber != playerSunkShipsNumber;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
 
-    public List<Ship> getShips(){
+    public List<Ship> getShips() {
         return ships;
+    }
+
+    public void setShips(List<Ship> ships) {
+        this.ships = ships;
     }
 }

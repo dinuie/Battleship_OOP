@@ -25,7 +25,7 @@ public class Game {
         this.turn = turn;
     }
 
-    private Game() {
+    public Game() {
         hasWon = false;
         turn = 1;
         board = new Board(10);
@@ -40,6 +40,7 @@ public class Game {
         firstPlayer = new Player(firstPlayer.getShips(), name);
         display.provideName();
         name = inputs.userName();
+        placeBoard();
         secondPlayer = new Player(secondPlayer.getShips(), name);
         display.boardFactory();
         play();
@@ -49,13 +50,13 @@ public class Game {
         while (!hasWon) {
             turn = getTurn();
             if (turn % 2 == 0) {
-                playRound(firstPlayer, secondPlayer);
+                playRound(firstPlayer, secondPlayer, secondPlayerBoard);
                 if (enemyHasLost(secondPlayer)) {
                     display.printWinner(firstPlayer);
                     hasWon = true;
                 }
             } else {
-                playRound(secondPlayer, firstPlayer);
+                playRound(secondPlayer, firstPlayer, firstPlayerBoard);
                 if (enemyHasLost(firstPlayer)) {
                     display.printWinner(secondPlayer);
                     hasWon = true;
@@ -65,15 +66,14 @@ public class Game {
         }
     }
 
-    private void playRound(Player currentPlayer, Player enemyPlayer) {
-        Square[][] table = board.getOcean();
-        display.printEnemyTable();
-        int[] shoot = inputs.coordInput();
+    private void playRound(Player currentPlayer, Player enemyPlayer, Board myBoardTipper) {
+        display.printBoard(myBoardTipper);
+        int[] shoot = inputs.userCoord();
         int xCoord = shoot[0];
         int yCoord = shoot[1];
-        currentPlayer.shoot(enemyPlayer, xCoord, yCoord);
-        board.setOcean(table);
-        display.printEnemyTable();
+        if (myBoardTipper[xCoord][yCoord])
+            currentPlayer.shoot(enemyPlayer, xCoord, yCoord, myBoardTipper);
+        display.printBoard(myBoardTipper);
     }
 
     private boolean enemyHasLost(Player enemyPlayer) {
