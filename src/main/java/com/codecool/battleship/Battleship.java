@@ -1,13 +1,9 @@
 package com.codecool.battleship;
 
-import com.codecool.battleship.Input;
-import com.codecool.battleship.Display;
-import com.codecool.battleship.Game;
-
 public class Battleship {
-    private Game game;
     private Display display;
     private Input inputs;
+    private Game game;
     public boolean run;
 
     private Battleship() {
@@ -17,7 +13,7 @@ public class Battleship {
         run = true;
     }
 
-    public void mainMenu() {
+    private void mainMenu() {
         while (run) {
             display.displayMenu();
             int chosenMode = inputs.userInt();
@@ -26,7 +22,7 @@ public class Battleship {
                     run = false;
                     break;
                 case 1:
-                    System.out.println("Start a new game");
+                    game.newGame();
                     break;
                 default:
                     display.wrongInput();
@@ -39,3 +35,4 @@ public class Battleship {
         new Battleship().mainMenu();
     }
 }
+

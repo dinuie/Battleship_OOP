@@ -2,53 +2,62 @@ package com.codecool.battleship;
 
 import com.codecool.battleship.ship.Ship;
 import com.codecool.battleship.square.Square;
-import com.codecool.battleship.square.SquareStatus;
+import com.codecool.battleship.square.SquareGraphics;
 
 import java.util.List;
 
 public class Player {
+    private Display display = new Display();
     private List<Ship> ships;
     private String name;
 
-    public Player(List<Ship> ships, String name) {
-        this.ships = ships;
+    public Player(String name) {
         this.name = name;
     }
 
-    public void shoot(Player enemyPlayer, int x, int y) {
+    public void shoot(Player enemyPlayer, Square targetSquare) {
         for (Ship ship : enemyPlayer.ships) {
             for (Square pos : ship.getPosition()) {
-                if (pos.getX() == x && pos.getY() == y && pos.getSquareStatus() != SquareStatus.HIT && pos.getSquareStatus() != SquareStatus.SUNK) {
-                    pos.getSquareStatus(SquareStatus.HIT);
+                if (pos == targetSquare) {
+                    pos.setSquareGraphics(SquareGraphics.HIT);
+                    if (ship.isSunk()) {
+                        markSunk(ship);
+                    }
+                    break;
                 }
             }
         }
+        if (targetSquare.getSquareGraphics() == SquareGraphics.EMPTY) {
+            display.youMissed();
+            targetSquare.setSquareGraphics(SquareGraphics.MISSED);
+        }
     }
 
-    public boolean isAlive(List<Ship> ships) {
-        int playerALlShipNumber = ships.size();
-        int playerSunkShipsNumber = 0;
+    private void markSunk(Ship ship) {
+        for (Square square : ship.getPosition()) {
+            square.setSquareGraphics(SquareGraphics.SUNK);
+        }
+        ship.setSunk(true);
+    }
+
+    public boolean isAlive() {
         for (Ship ship : ships) {
-            if (ship.getSunk()) {
-                playerSunkShipsNumber++;
+            if (!ship.getSunk()) {
+                return true;
             }
         }
-        return playerALlShipNumber != playerSunkShipsNumber;
+        return false;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<Ship> getShips() {
-        return ships;
-    }
-
     public void setShips(List<Ship> ships) {
         this.ships = ships;
+    }
+
+    public void displayRound() {
+        display.displayPlayerRound(name);
     }
 }

@@ -5,59 +5,86 @@ import com.codecool.battleship.Input;
 import com.codecool.battleship.ship.Ship;
 import com.codecool.battleship.ship.ShipType;
 import com.codecool.battleship.square.Square;
-import com.codecool.battleship.square.SquareStatus;
+import com.codecool.battleship.square.SquareGraphics;
+import com.codecool.battleship.Display;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.LinkedList;
 
 public class BoardFactory {
-    public void manualPlacement(Player player, Board board, Input input) {
+
+    private final Display display = new Display();
+    private final Input input = new Input();
+
+    public void beginPlacement(Player player, Board board, boolean auto) {
         List<Ship> ships = new LinkedList<>();
         List<Square> positions;
-        Square[][] ocean = board.getOcean();
+        Square[][] spot = board.getSpot();
         for (ShipType shipType : ShipType.values()) {
-            //display info about the ship length and ask for coordinates
-            positions = placeShips(ocean, shipType, input);
+            positions = getShips(spot, shipType, auto);
+            markShips(positions);
             ships.add(new Ship(positions, shipType, player));
+            board.display();
         }
         player.setShips(ships);
     }
 
-    private List<Square> placeShips(Square[][] ocean, ShipType shipType, Input input) {
-        int[] firstCoord = input.coordInput();
+    private List<Square> getShips(Square[][] spot, ShipType shipType, boolean auto) {
+        int[] firstCoord;
+        if (auto) {
+            firstCoord = input.randomCoords();
+        } else {
+            display.setPlacementCoord(shipType);
+            firstCoord = input.userCoord();
+        }
         List<Square> shipPositions = new LinkedList<>();
-        if (!isEmptyField(firstCoord, ocean) && !isValidCoord(firstCoord, ocean)) {
-            return placeShips(ocean, shipType, input);
+        if (!isFieldEmpty(firstCoord, spot)) {
+            return getShips(spot, shipType, auto);
         }
-        //ask user for direction
-
-        int[] direction = input.getDirection();
-
-        Square targetSquare = ocean[firstCoord[0]][firstCoord[1]];
-        targetSquare.setSquareStatus(SquareStatus.SHIP);
-        shipPositions.add(targetSquare);
+        int[] direction;
+        if (auto) {
+            direction = input.randomDirection();
+        } else {
+            display.chooseDirection();
+            direction = input.getDirection();
+        }
+        Square targetSquare = spot[firstCoord[0]][firstCoord[1]];
         int i = 1;
+        int[] nextCoord = new int[2];
         while (i < shipType.getLength()) {
-            placeShip(ocean, firstCoord, shipPositions, direction);
-            i++;
+            nextCoord[0] = firstCoord[0] + direction[0] * i;
+            nextCoord[1] = firstCoord[1] + direction[1] * i;
+            if (isCoordValid(nextCoord, spot) && isFieldEmpty(nextCoord, spot)) {
+                placeShip(spot, nextCoord, shipPositions);
+                i++;
+            } else {
+                display.outsideBoard();
+                return getShips(spot, shipType, auto);
+            }
         }
+        shipPositions.add(targetSquare);
         return shipPositions;
     }
 
-    private void placeShip(Square[][] ocean, int[] firstCoo, List<Square> shipPositions, int[] direction) {
+    private void placeShip(Square[][] spot, int[] nextCoord, List<Square> shipPositions) {
         Square targetSquare;
-        targetSquare = ocean[firstCoo[0] + direction[0]][firstCoo[1] + direction[1]];
-        targetSquare.setSquareStatus(SquareStatus.SHIP);
+        targetSquare = spot[nextCoord[0]][nextCoord[1]];
         shipPositions.add(targetSquare);
     }
 
-    public boolean isValidCoord(int[] inputCoord, Square[][] ocean) {
-        int length = ocean.length;
-        return 0 <= inputCoord[0] && 0 <= inputCoord[1] && inputCoord[0] <= length && inputCoord[1] <= length;
+    private void markShips(List<Square> shipPositions) {
+        for (Square position : shipPositions) {
+            position.setSquareGraphics(SquareGraphics.SHIP);
+        }
     }
 
-    public boolean isEmptyField(int[] inputCoord, Square[][] ocean) {
-        Square targetSquare = ocean[inputCoord[0]][inputCoord[1]];
-        return (targetSquare.getSquareStatus() == SquareStatus.EMPTY);
+    public boolean isFieldEmpty(int[] inputCoord, Square[][] spot) {
+        Square targetSquare = spot[inputCoord[0]][inputCoord[1]];
+        return (targetSquare.getSquareGraphics() == SquareGraphics.EMPTY);
+    }
+
+    public boolean isCoordValid(int[] inputCoord, Square[][] spot) {
+        int length = spot.length;
+        return 0 <= inputCoord[0] && 0 <= inputCoord[1] && inputCoord[0] < length && inputCoord[1] < length;
     }
 }

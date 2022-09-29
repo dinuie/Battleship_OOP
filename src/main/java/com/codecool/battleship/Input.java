@@ -1,10 +1,15 @@
 package com.codecool.battleship;
 
-import com.codecool.battleship.Util;
+import com.codecool.battleship.board.Board;
+import com.codecool.battleship.ship.Coordinate;
 
+import java.util.Random;
 import java.util.Scanner;
 
 public class Input {
+
+    private final Display display = new Display();
+
     Scanner userInput = new Scanner(System.in);
 
     public String userName() {
@@ -15,8 +20,30 @@ public class Input {
         return userName();
     }
 
+    public int[] getDirection() {
+        String input = userInput.nextLine();
+        int[] direction;
+        switch (input.toLowerCase()) {
+            case "u":
+                direction = Coordinate.UP.getCoords();
+                return direction;
+            case "d":
+                direction = Coordinate.DOWN.getCoords();
+                return direction;
+            case "r":
+                direction = Coordinate.RIGHT.getCoords();
+                return direction;
+            case "l":
+                direction = Coordinate.LEFT.getCoords();
+                return direction;
+            default:
+                display.wrongInput();
+                return getDirection();
+        }
+    }
+
     public int userInt() {
-        String input = "";
+        String input = userInput.nextLine();
         while (!isInt(input)) {
             input = userInput.nextLine();
         }
@@ -29,31 +56,33 @@ public class Input {
             return true;
         } catch (
                 NumberFormatException e) {
+            display.wrongInput();
             return false;
         }
-
     }
 
     public int[] userCoord() {
-        char[] abc = Util.getLetters(10, false);
+        char[] abc = Board.getLetters(10, false);
         String move = userInput.nextLine();
-        char[] startingCoord = move.toCharArray();
-        if (!isValidCoordInput(startingCoord)) {
+        char[] startCoord = move.toCharArray();
+        if (!isCoordInputValid(startCoord)) {
+            display.wrongInput();
             return userCoord();
         }
-        int firstCoord = convertFirstCoord(startingCoord[0], abc);
-        int secondCoord = convertSecordCoord(startingCoord, abc);
+        int firstCoord = convertFirstCoord(startCoord[0], abc);
+        int secondCoord = convertSecondCoord(startCoord, abc);
         if (firstCoord < 0 || secondCoord < 0) {
+            display.wrongInput();
             return userCoord();
         }
-        int[] startingCoord = new int[2];
-        startingCoord[0] = firstCoord;
-        startingCoord[1] = secondCoord;
-        return startingCoord;
+        int[] startCoords = new int[2];
+        startCoords[1] = firstCoord;
+        startCoords[0] = secondCoord;
+        return startCoords;
     }
 
     public int convertFirstCoord(char coord, char[] abc) {
-        coord = Character.toUpperCase(coord);
+        coord = Character.toLowerCase(coord);
         int firstCoord = 0;
         boolean found = false;
         for (int i = 0; i < abc.length; i++) {
@@ -68,21 +97,22 @@ public class Input {
         return -1;
     }
 
-    public int convertSecordCoord(char[] coords, char[] abc) {
+
+    public int convertSecondCoord(char[] coords, char[] abc) {
         String convertCoord;
         if (coords.length > 2) {
             convertCoord = String.valueOf(coords[1]) + coords[2];
         } else {
             convertCoord = String.valueOf(coords[1]);
         }
-        int coord = Integer.parseInt(convertCoord) - 1;
-        if (coord < abc.length) {
-            return coord;
+        int coo = Integer.parseInt(convertCoord);
+        if (coo < abc.length) {
+            return coo;
         }
         return -1;
     }
 
-    public boolean isValidCoordInput(char[] coords) {
+    public boolean isCoordInputValid(char[] coords) {
         if (coords.length < 2 || coords.length > 3) {
             return false;
         } else if (coords.length == 3) {
@@ -92,5 +122,16 @@ public class Input {
 
     public boolean isValidNameInput(String name) {
         return name.length() <= 10;
+    }
+
+    public int[] randomCoords() {
+        int[] startCoord = new int[2];
+        startCoord[0] = new Random().nextInt(10);
+        startCoord[1] = new Random().nextInt(10);
+        return startCoord;
+    }
+
+    public int[] randomDirection() {
+        return Coordinate.values()[new Random().nextInt(Coordinate.values().length)].getCoords();
     }
 }

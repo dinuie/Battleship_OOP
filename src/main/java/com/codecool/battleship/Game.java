@@ -1,98 +1,104 @@
 package com.codecool.battleship;
 
-import com.codecool.battleship.Display;
-import com.codecool.battleship.Input;
-import com.codecool.battleship.Player;
 import com.codecool.battleship.board.Board;
 import com.codecool.battleship.board.BoardFactory;
 import com.codecool.battleship.square.Square;
+import com.codecool.battleship.square.SquareGraphics;
 
 public class Game {
-    private Player firstPlayer;
-    private Player secondPlayer;
-    private Display display;
-    private Input inputs;
-    private Board board;
-    private int turn;
-    private boolean hasWon;
-    private String name;
+    private boolean autoPlacement = false;
+    private Player player1;
+    private Player player2;
+    private final Display display = new Display();
+    private final Input inputs = new Input();
+    private Board player1Board;
+    private Board player2Board;
+    private int turn = 1;
+    private final BoardFactory boardFactory = new BoardFactory();
+    private Board currentBoard;
+    private Board enemyBoard;
+    private Player currentPlayer;
+    private Player enemyPlayer;
 
-    private int getTurn() {
-        return turn;
+    public String getPlayerName() {
+        display.chooseName();
+        return inputs.userName();
     }
 
-    public void setTurn(int turn) {
-        this.turn = turn;
-    }
-
-    public Game() {
-        hasWon = false;
-        turn = 1;
-        board = new Board(10);
-        display = new Display();
-        inputs = new Input();
-    }
-
-    private void newGame() {
-        display.provideName();
-        name = inputs.userName();
-        placeBoard();
-        firstPlayer = new Player(firstPlayer.getShips(), name);
-        display.provideName();
-        name = inputs.userName();
-        placeBoard();
-        secondPlayer = new Player(secondPlayer.getShips(), name);
-        display.boardFactory();
+    public void newGame() {
+        player1 = new Player(getPlayerName());
+        player1Board = new Board(10);
+        placeBoard(player1, player1Board);
+        player2 = new Player(getPlayerName());
+        player2Board = new Board(10);
+        placeBoard(player2, player2Board);
         play();
     }
 
+
     private void play() {
-        while (!hasWon) {
-            turn = getTurn();
-            if (turn % 2 == 0) {
-                playRound(firstPlayer, secondPlayer, secondPlayerBoard);
-                if (enemyHasLost(secondPlayer)) {
-                    display.printWinner(firstPlayer);
-                    hasWon = true;
-                }
-            } else {
-                playRound(secondPlayer, firstPlayer, firstPlayerBoard);
-                if (enemyHasLost(firstPlayer)) {
-                    display.printWinner(secondPlayer);
-                    hasWon = true;
-                }
-            }
-            setTurn(turn + 1);
+        while (player1.isAlive() && player2.isAlive()) {
+            playRound();
+            turn++;
+        }
+        if (!player2.isAlive()) {
+            display.printWinner(player1.getName());
+        } else if (!player1.isAlive()) {
+            display.printWinner(player2.getName());
         }
     }
 
-    private void playRound(Player currentPlayer, Player enemyPlayer, Board myBoardTipper) {
-        display.printBoard(myBoardTipper);
+    private void playRound() {
+        if (turn % 2 != 0) {
+            currentPlayer = player1;
+            enemyPlayer = player2;
+            currentBoard = player1Board;
+            enemyBoard = player2Board;
+        } else {
+            currentPlayer = player2;
+            enemyPlayer = player1;
+            currentBoard = player2Board;
+            enemyBoard = player1Board;
+        }
+        display.clearConsole();
+        currentPlayer.displayRound();
+        enemyBoard.setIsHidden(true);
+        currentBoard.setIsHidden(false);
+        currentBoard.display();
+//        enemyBoard.display();
+        fire();
+    }
+
+    public void fire() {
+        display.chooseShootingCoords();
         int[] shoot = inputs.userCoord();
         int xCoord = shoot[0];
         int yCoord = shoot[1];
-        if (myBoardTipper[xCoord][yCoord])
-            currentPlayer.shoot(enemyPlayer, xCoord, yCoord, myBoardTipper);
-        display.printBoard(myBoardTipper);
-    }
-
-    private boolean enemyHasLost(Player enemyPlayer) {
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                if (board[i][j] == enemyPlayer) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private void placeBoard() {
-        int choice = inputs.userInt();
-        if (choice == 1) {
-            BoardFactory manual;
+        Square targetSquare = enemyBoard.getSpot()[xCoord][yCoord];
+        if (targetSquare.getSquareGraphics() == SquareGraphics.SHIP ||
+                targetSquare.getSquareGraphics() == SquareGraphics.EMPTY) {
+            currentPlayer.shoot(enemyPlayer, targetSquare);
         } else {
-            BoardFactory random;
+            display.displayShotSquare();
+            fire();
         }
+    }
+
+
+    private void placeBoard(Player player, Board board) {
+        display.manualOrRandom();
+        int choice = inputs.userInt();
+        switch (choice) {
+            case 1:
+                autoPlacement = false;
+                break;
+            case 2:
+                autoPlacement = true;
+                break;
+            default:
+                display.wrongInput();
+                placeBoard(player, board);
+        }
+        boardFactory.beginPlacement(player, board, autoPlacement);
     }
 }

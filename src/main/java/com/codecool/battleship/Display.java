@@ -1,46 +1,88 @@
 package com.codecool.battleship;
 
-import com.codecool.battleship.Util;
+import com.codecool.battleship.board.Board;
 import com.codecool.battleship.square.Square;
+import com.codecool.battleship.ship.ShipType;
 
 public class Display {
     public void displayMenu() {
-        System.out.println("1. Start a new game");
-        System.out.println("0. Exit");
+        System.out.println("1. Start game | Player vs. Player");
+        System.out.println("0. Quit");
+    }
+
+    public void manualOrRandom() {
+        System.out.println("1. Manual placement");
+        System.out.println("2. Random placement");
     }
 
     public void wrongInput() {
         System.out.println("Invalid input, try again!");
     }
 
-    public static void clearConsole() {
+    public void youMissed(){
+        System.out.println("You missed!");
+    }
+
+    public void clearConsole() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
 
-    public void displayBoards(Square[][] ocean1, Square[][] ocean2) {
-        String header = Util.makeHeader(ocean1.length);
-        System.out.println(header);
-        for (int i = 0; i < ocean1.length; i++) {
-            StringBuilder board1;
+    public void displayBoard(Square[][] spot, boolean isHidden) {
+        String lettersHeader = Board.setLettersHeader(spot.length);
+        System.out.println(lettersHeader);
+        for (int i = 0; i < spot.length; i++) {
+            StringBuilder row;
             if (i < 10) {
-                board1 = new StringBuilder(" " + i);
+                row = new StringBuilder(i + " ");
             } else {
-                board1 = new StringBuilder(i);
+                row = new StringBuilder(i);
             }
-            StringBuilder board2 = new StringBuilder(" ");
-            for (int j = 0; j < ocean1.length; j++) {
-                board1.append(ocean1[i][j].graphic()).append(" ");
-                board1.append(ocean2[i][j].graphic()).append(" ");
+            for (int j = 0; j < spot.length; j++) {
+                if (isHidden && spot[i][j].graphic().equals("U+1F6E5")) {
+                    row.append("U+26AB");
+                } else {
+                    row.append(spot[i][j].graphic());
+                }
             }
-            if (i < 10) {
-                board2.append(" ").append(i);
-            } else {
-                board2.append(i);
-            }
-            board1.append(" || ");
-            board1.append(board2);
-            System.out.println(board1);
+            System.out.println(row);
         }
+    }
+
+    public void chooseName() {
+        System.out.println("Please choose a nickname!");
+    }
+
+    public void printWinner(String player) {
+        System.out.println(player + " won the game!");
+    }
+
+    public void setPlacementCoord(ShipType shipType) {
+        System.out.println("Please choose a coordinate for " + shipType + " (e.g. A4). The length of this ship is: " + shipType.getLength());
+    }
+
+    public void outsideBoard() {
+        System.out.println("The coordinates you chose are outside the board, please re-choose!");
+    }
+
+    public void chooseDirection() {
+        System.out.println("Please choose the direction of the ship!");
+        System.out.println("Follow the rules:");
+        System.out.println("[U] - Place the ship UP");
+        System.out.println("[D] - Place the ship DOWN");
+        System.out.println("[R] - Place the ship to the RIGHT");
+        System.out.println("[L] - Place the ship to the LEFT");
+    }
+
+    public void chooseShootingCoords() {
+        System.out.println("Please choose coordinates in order to shoot!(e.g. A4)");
+    }
+
+    public void displayPlayerRound(String name) {
+        System.out.println("Your turn to shoot, " + name + "!");
+    }
+
+    public void displayShotSquare() {
+        System.out.println("You've already shot there, choose another spot!");
     }
 }
