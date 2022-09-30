@@ -16,22 +16,23 @@ public class BoardFactory {
     private final Display display = new Display();
     private final Input input = new Input();
 
-    public void beginPlacement(Player player, Board board, boolean auto) {
+    public void beginPlacement(Player player, Board board, boolean random) {
         List<Ship> ships = new LinkedList<>();
         List<Square> positions;
         Square[][] spot = board.getSpot();
         for (ShipType shipType : ShipType.values()) {
-            positions = getShips(spot, shipType, auto);
+            board.display();
+            positions = getShips(spot, shipType, random);
             markShips(positions);
             ships.add(new Ship(positions, shipType, player));
-            board.display();
+            player.setShips(ships);
         }
-        player.setShips(ships);
+        board.display();
     }
 
-    private List<Square> getShips(Square[][] spot, ShipType shipType, boolean auto) {
+    private List<Square> getShips(Square[][] spot, ShipType shipType, boolean random) {
         int[] firstCoord;
-        if (auto) {
+        if (random) {
             firstCoord = input.randomCoords();
         } else {
             display.setPlacementCoord(shipType);
@@ -39,10 +40,10 @@ public class BoardFactory {
         }
         List<Square> shipPositions = new LinkedList<>();
         if (!isFieldEmpty(firstCoord, spot)) {
-            return getShips(spot, shipType, auto);
+            return getShips(spot, shipType, random);
         }
         int[] direction;
-        if (auto) {
+        if (random) {
             direction = input.randomDirection();
         } else {
             display.chooseDirection();
@@ -59,7 +60,7 @@ public class BoardFactory {
                 i++;
             } else {
                 display.outsideBoard();
-                return getShips(spot, shipType, auto);
+                return getShips(spot, shipType, random);
             }
         }
         shipPositions.add(targetSquare);

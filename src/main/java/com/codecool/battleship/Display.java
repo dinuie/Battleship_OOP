@@ -10,7 +10,7 @@ public class Display {
         System.out.println("0. Quit");
     }
 
-    public void manualOrRandom() {
+    public void manualOrRandomPlacement() {
         System.out.println("1. Manual placement");
         System.out.println("2. Random placement");
     }
@@ -19,8 +19,16 @@ public class Display {
         System.out.println("Invalid input, try again!");
     }
 
-    public void youMissed(){
-        System.out.println("You missed!");
+    public void youMissed() {
+        System.out.println("You MISSED!");
+    }
+
+    public void youHit(){
+        System.out.println("Nice, it's a HIT!");
+    }
+
+    public void youSunk(){
+        System.out.println("Nice, you SUNK a boat!");
     }
 
     public void clearConsole() {
@@ -39,8 +47,8 @@ public class Display {
                 row = new StringBuilder(i);
             }
             for (int j = 0; j < spot.length; j++) {
-                if (isHidden && spot[i][j].graphic().equals("U+1F6E5")) {
-                    row.append("U+26AB");
+                if (isHidden && spot[i][j].graphic().equals("⛵")) {
+                    row.append("⚫");
                 } else {
                     row.append(spot[i][j].graphic());
                 }
@@ -62,8 +70,10 @@ public class Display {
     }
 
     public void outsideBoard() {
-        System.out.println("The coordinates you chose are outside the board, please re-choose!");
+        System.out.println("The direction you chose is outside the board, please re-choose!");
     }
+
+
 
     public void chooseDirection() {
         System.out.println("Please choose the direction of the ship!");

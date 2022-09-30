@@ -6,7 +6,7 @@ import com.codecool.battleship.square.Square;
 import com.codecool.battleship.square.SquareGraphics;
 
 public class Game {
-    private boolean autoPlacement = false;
+    private boolean randomPlacement = false;
     private Player player1;
     private Player player2;
     private final Display display = new Display();
@@ -65,7 +65,7 @@ public class Game {
         enemyBoard.setIsHidden(true);
         currentBoard.setIsHidden(false);
         currentBoard.display();
-//        enemyBoard.display();
+        enemyBoard.display();
         fire();
     }
 
@@ -86,19 +86,19 @@ public class Game {
 
 
     private void placeBoard(Player player, Board board) {
-        display.manualOrRandom();
+        display.manualOrRandomPlacement();
         int choice = inputs.userInt();
         switch (choice) {
             case 1:
-                autoPlacement = false;
+                randomPlacement = false;
                 break;
             case 2:
-                autoPlacement = true;
+                randomPlacement = true;
                 break;
             default:
                 display.wrongInput();
                 placeBoard(player, board);
         }
-        boardFactory.beginPlacement(player, board, autoPlacement);
+        boardFactory.beginPlacement(player, board, randomPlacement);
     }
 }

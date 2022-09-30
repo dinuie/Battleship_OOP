@@ -19,8 +19,10 @@ public class Player {
         for (Ship ship : enemyPlayer.ships) {
             for (Square pos : ship.getPosition()) {
                 if (pos == targetSquare) {
+                    display.youHit();
                     pos.setSquareGraphics(SquareGraphics.HIT);
                     if (ship.isSunk()) {
+                        display.youSunk();
                         markSunk(ship);
                     }
                     break;
